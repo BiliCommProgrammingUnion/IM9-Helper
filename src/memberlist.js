@@ -1,10 +1,13 @@
+/**
+ * 成员的信息页面
+ * @author airhiki, CharTen
+ */
 (function() {
-"use strict";
 
     /**
      * 字符串乘法
      * @param  {String} s pre-string
-     * @param  {int} n times
+     * @param  {int} n    times
      * @return {String} string
      */
     function strmult(s, n) {
@@ -41,10 +44,13 @@
         $(this).val(aValue[i]);
     });// 按钮列表
     box.append(buttlist[0]);
-    buttlist[0].onclick = MemberListCollect;
+    $(".chartbutton").click(MemberListCollect);
     var list = [];
     var total_page;
 
+    /**
+     * 获取成员列表信息
+     */
     function MemberListCollect() {
         var i = 1; // 计数器
         var loadimg = $("<img></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box);
@@ -67,23 +73,28 @@
             }
         }
 
+        /**
+         * 通过接口加载成员列表
+         * @param  {int}   no          页数编号
+         * @param  {Function} callback 回调函数
+         */
         function loadList(no, callback) {
-            //console.log('传入参数no',no);
+            // console.log('传入参数no',no);
             var para = getAjaxData({
                 page_no: no
-            }); //准备参数
+            }); // 准备参数
             para.captcha = window.captcha_key;
             para.ts = (function() {
                 var d = new Date();
                 return parseInt(d.getTime().toString().slice(0, 10) + "000")
             })()
-            para && $.ajax({ //发送请求
+            para && $.ajax({ // 发送请求
                 url: apiManageList.QueryMemberList,
                 type: "get",
                 dataType: "json",
                 data: para,
                 success: function(r) {
-                    //console.log('返回值r',r);
+                    // console.log('返回值r',r);
                     if (0 == r.code) {
                         callback && callback(r);
                     }
@@ -91,6 +102,9 @@
             })
         }
 
+        /**
+         * 获取List后的回调
+         */
         function AfterGetList() {
             chartinfo.text("总人数：" + list.length + ' 总页数：' + total_page);
             //console.log(list);
@@ -115,7 +129,11 @@
         loadList(1, src);
         chartinfo.text("加载时间较长，请耐心等待……");
     }
-    //========================生成图表============================
+
+    /**
+     * 生成图表
+     * @param {[type]} list 数据
+     */
     function CreateChart(list) {
         function MemberDataHandle(list) { //数据处理
             var data = new Array();
@@ -175,8 +193,12 @@
         myChart.setOption(option);
     }
 
+    /**
+     * 创建注册时间图表
+     * @param {[type]} list 数据
+     */
     function CreateChart2(list) {
-        function MemberDataHandle(list) { //数据处理
+        function MemberDataHandle(list) { // 数据处理
             var data = new Array();
             data["2012年前"] = 0;
             data["2012"] = 0;
@@ -205,7 +227,7 @@
         }
         var datares = MemberDataHandle(list);
         var myChart = echarts.init(chartlist[1]);
-        myChart.showLoading(); //加载动画
+        myChart.showLoading(); // 加载动画
         var datatime = new Array();
         var datamember = new Array();
 
