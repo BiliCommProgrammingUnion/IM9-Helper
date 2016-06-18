@@ -40,13 +40,13 @@
     var box = $("<div class='chartbox'></div>").insertBefore(".table-nav");// 图表盒
     var chartlist = $(strmult('<div class ="chart"></div>',2)).css("display","none").appendTo(box); // 图表列表
     var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box);// 信息显示区
-    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>',4)).each(function(i,ele){
+    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>',4)).each(function(i){
         $(this).val(aValue[i]);
     });// 按钮列表
     box.append(buttlist[0]);
     $(".chartbutton").click(MemberListCollect);
     var list = [];
-    var total_page;
+    var totalPage;
 
     /**
      * 获取成员列表信息
@@ -57,19 +57,19 @@
         $(buttlist[0]).css("display", "none"); // 隐藏按钮
         function src(r) { // 被回调函数，处理返回数据，决定是否进行下一次请求
             // console.log(r);
-            total_page = r.data.total_page;
+            totalPage = r.data['total_page'];
             var result = r.data.result;
-            for (e in result) {
+            for (var e in result) {
                 list.push(result[e]); // 添加元素
             }
             i++;
-            if (i <= total_page) { //决定是否进行下一次请求,递归调用
+            if (i <= totalPage) { //决定是否进行下一次请求,递归调用
                 //console.log('当前页数i');
-                chartinfo.text("已加载" + i + "页，共" + total_page + "页……");
+                chartinfo.text("已加载" + i + "页，共" + totalPage + "页……");
                 loadList(i, src);
             } else { //获取数据完毕 请求结束 显示结果
                 loadimg.css("display", "none");
-                AfterGetList();
+                afterGetList();
             }
         }
 
@@ -81,13 +81,13 @@
         function loadList(no, callback) {
             // console.log('传入参数no',no);
             var para = getAjaxData({
-                page_no: no
+                "page_no": no
             }); // 准备参数
-            para.captcha = window.captcha_key;
+            para.captcha = window['captcha_key'];
             para.ts = (function() {
                 var d = new Date();
-                return parseInt(d.getTime().toString().slice(0, 10) + "000")
-            })()
+                return parseInt(d.getTime().toString().slice(0, 10) + "000");
+            })();
             para && $.ajax({ // 发送请求
                 url: apiManageList.QueryMemberList,
                 type: "get",
@@ -95,36 +95,37 @@
                 data: para,
                 success: function(r) {
                     // console.log('返回值r',r);
-                    if (0 == r.code) {
+                    if (0 === r.code) {
                         callback && callback(r);
                     }
                 }
-            })
+            });
         }
 
         /**
          * 获取List后的回调
          */
-        function AfterGetList() {
-            chartinfo.text("总人数：" + list.length + ' 总页数：' + total_page);
+        function afterGetList() {
+            chartinfo.text("总人数：" + list.length + ' 总页数：' + totalPage);
             //console.log(list);
             list = list.reverse(); //倒序
             box.append(buttlist[1]);
+
             buttlist[1].onclick = function() {
                 chartlist.css("display", "none");
                 $(chartlist[0]).css("display", "block");
-                CreateChart(list);
+                createChart(list);
             };
             box.append(buttlist[2]);
             buttlist[2].onclick = function() {
                 chartlist.css("display", "none");
                 $(chartlist[1]).css("display", "block");
-                CreateChart2(list);
+                createChart2(list);
             };
             box.append(buttlist[3]);
             buttlist[3].onclick = function() {
                 downloadform(list);
-            }
+            };
         }
         loadList(1, src);
         chartinfo.text("加载时间较长，请耐心等待……");
@@ -134,32 +135,32 @@
      * 生成图表
      * @param {[type]} list 数据
      */
-    function CreateChart(list) {
-        function MemberDataHandle(list) { //数据处理
-            var data = new Array();
+    function createChart(list) {
+        function memberDataHandle(list) { //数据处理
+            var data = [];
             var timebase;
 
             function timereset(time) { //调整为一天开始
-                return time.slice(0, 10)
+                return time.slice(0, 10);
             }
             for (var i in list) {
-                timebase = timereset(list[i].join_time);
+                timebase = timereset(list[i]['join_time']);
                 if (data[timebase]) {
                     data[timebase]++;
                 } else {
                     data[timebase] = 1;
                 }
             }
-            return data
+            return data;
         }
         var myChart = echarts.init(chartlist[0]);
-        myChart.showLoading(); //加载动画
-        var datatime = new Array();
-        var datamember = new Array();
-        var datares = MemberDataHandle(list);
-        for (var e in datares) { //取出数据，放入坐标轴
-            datatime.push(e)
-            datamember.push(datares[e])
+        myChart.showLoading(); // 加载动画
+        var datatime = [];
+        var datamember = [];
+        var datares = memberDataHandle(list);
+        for (var e in datares) { // 取出数据，放入坐标轴
+            datatime.push(e);
+            datamember.push(datares[e]);
         }
         var option = { // 指定图表的配置项和数据
             title: {
@@ -197,9 +198,9 @@
      * 创建注册时间图表
      * @param {[type]} list 数据
      */
-    function CreateChart2(list) {
-        function MemberDataHandle(list) { // 数据处理
-            var data = new Array();
+    function createChart2(list) {
+        function memberDataHandle(list) { // 数据处理
+            var data = [];
             data["2012年前"] = 0;
             data["2012"] = 0;
             data["2013"] = 0;
@@ -208,7 +209,7 @@
             data["2016"] = 0;
             var memberid;
             for (var i in list) {
-                memberid = list[i].member_id;
+                memberid = list[i]['member_id'];
                 if (memberid >= 20593643) {
                     data["2016"]++;
                 } else if (memberid >= 7532843) {
@@ -223,13 +224,13 @@
                     data["2012年前"]++;
                 }
             }
-            return data
+            return data;
         }
-        var datares = MemberDataHandle(list);
+        var datares = memberDataHandle(list);
         var myChart = echarts.init(chartlist[1]);
         myChart.showLoading(); // 加载动画
-        var datatime = new Array();
-        var datamember = new Array();
+        var datatime = [];
+        var datamember = [];
 
         function newjson(name, value, target) {
             var json = {};
@@ -286,11 +287,11 @@
             .append("<tr><th>UID</th><th>USERNAME</th><th>JOIN_TIME</th>");
 
         for (var i = 0; i < result.length; i++) {
-            $("<tr><td>" + result[i].member_id + "</td>" + "<td>" + result[i].username + "</td>" + "<td>" + result[i].join_time + "</td>" + "</tr>").appendTo(table);
+            $("<tr><td>" + result[i]['member_id'] + "</td>" + "<td>" + result[i].username + "</td>" + "<td>" + result[i]['join_time'] + "</td>" + "</tr>").appendTo(table);
         }
         var blob = new Blob([table[0].outerHTML], {
             type: "text/plain;charset=utf-8"
         });
         saveAs(blob, "form.xls");
     }
-})()
+})();

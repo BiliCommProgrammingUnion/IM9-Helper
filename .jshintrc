@@ -4,6 +4,7 @@
   "expr": true,
   "multistr": true,
   "shadow": true,
+  "sub": true,
   "validthis": true,
   "camelcase": true,
   "eqeqeq": true,
