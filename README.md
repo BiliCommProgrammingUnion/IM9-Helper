@@ -11,3 +11,5 @@ P.S. 请在后台的“会员列表”页面中使用。
 ![DemoMemLst](img/demo_memlst.png)
 
 ## Usage
+
+请移步 [这里](http://bcpu.oschina.io/im9-helper/)
