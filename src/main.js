@@ -1,4 +1,4 @@
-var _url = document.URL;
+var _url = document.URL, _baseUrl = "http://git.oschina.net/BCPU/IM9-Helper/raw/master/src";
 
 // 判断是否打开
 try {
@@ -13,9 +13,9 @@ if (_hasHelper) {
 } else {
     // 选择页面
     if (_url.slice(33, 43) === "MemberList") { // 在用户列表界面
-        $.getScript("http://work.bcpu.tk/im9helper/memberlist.js");
+        $.getScript(_baseUrl + "/memberlist.js");
     } else if (_url.slice(33, 41) === "PostList") { // 在用户列表界面
-        alert('帖子页面');
+        $.getScript(_baseUrl + "/article.js");
     } else {
         _hasHelper = false;
         alert('请在兴趣圈管理界面使用！');

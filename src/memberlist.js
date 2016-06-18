@@ -36,13 +36,13 @@
         });
         _hasHelper = true;
     }
-    var aValue=[ "获取数据", "加入时间分布","注册时间分布","下载表格"];
-    var box = $("<div class='chartbox'></div>").insertBefore(".table-nav");// 图表盒
-    var chartlist = $(strmult('<div class ="chart"></div>',2)).css("display","none").appendTo(box); // 图表列表
-    var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box);// 信息显示区
-    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>',4)).each(function(i){
+    var aValue = ["获取数据", "加入时间分布", "注册时间分布", "下载表格"];
+    var box = $("<div class='chartbox'></div>").insertBefore(".table-nav"); // 图表盒
+    var chartlist = $(strmult('<div class ="chart"></div>', 2)).css("display", "none").appendTo(box); // 图表列表
+    var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box); // 信息显示区
+    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>', 4)).each(function(i) {
         $(this).val(aValue[i]);
-    });// 按钮列表
+    }); // 按钮列表
     box.append(buttlist[0]);
     $(".chartbutton").click(MemberListCollect);
     var list = [];
