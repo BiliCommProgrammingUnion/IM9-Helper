@@ -33,14 +33,13 @@
         });
         _hasHelper = true;
     }
-    var box = $("<div></div>").addClass("chartbox").insertBefore(".table-nav"); // 图表盒
-    var chartlist = $(strmult('<div class ="chart"></div>', 2)).css("display", "none").appendTo(box); // 图表列表
-    var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box); // 信息显示区
-    var buttlist = $(strmult('<input type = "button" class = "chartbutton"></input>', 4)); // 按钮列表
-    buttlist[0].value = "获取数据";
-    buttlist[1].value = "加入时间分布";
-    buttlist[2].value = "注册时间分布";
-    buttlist[3].value = "下载表格";
+    var aValue=[ "获取数据", "加入时间分布","注册时间分布","下载表格"];
+    var box = $("<div class='chartbox'></div>").insertBefore(".table-nav");// 图表盒
+    var chartlist = $(strmult('<div class ="chart"></div>',2)).css("display","none").appendTo(box); // 图表列表
+    var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box);// 信息显示区
+    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>',4)).each(function(i,ele){
+        $(this).val(aValue[i]);
+    });// 按钮列表
     box.append(buttlist[0]);
     buttlist[0].onclick = MemberListCollect;
     var list = [];
