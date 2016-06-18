@@ -1,0 +1,14 @@
+{
+  "boss": true,
+  "eqnull": true,
+  "expr": true,
+  "multistr": true,
+  "shadow": true,
+  "validthis": true,
+  "camelcase": true,
+  "eqeqeq": true,
+  "immed": true,
+  "newcap": true,
+  "noarg": true,
+  "unused": true
+}
