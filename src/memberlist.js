@@ -36,11 +36,11 @@
         });
         _hasHelper = true;
     }
-    var aValue = ["获取数据", "加入时间分布", "注册时间分布", "下载表格"];
+    var aValue = ["获取数据", "加入时间分布", "注册时间分布", "新人发帖指数", "下载表格"];
     var box = $("<div class='chartbox'></div>").insertBefore(".table-nav"); // 图表盒
-    var chartlist = $(strmult('<div class ="chart"></div>', 2)).css("display", "none").appendTo(box); // 图表列表
+    var chartlist = $(strmult('<div class ="chart"></div>', 3)).css("display", "none").appendTo(box); // 图表列表
     var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box); // 信息显示区
-    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>', 4)).each(function(i) {
+    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>', aValue.length)).each(function(i) {
         $(this).val(aValue[i]);
     }); // 按钮列表
     box.append(buttlist[0]);
@@ -110,7 +110,6 @@
             //console.log(list);
             list = list.reverse(); //倒序
             box.append(buttlist[1]);
-
             buttlist[1].onclick = function() {
                 chartlist.css("display", "none");
                 $(chartlist[0]).css("display", "block");
@@ -124,6 +123,12 @@
             };
             box.append(buttlist[3]);
             buttlist[3].onclick = function() {
+                chartlist.css("display", "none");
+                $(chartlist[2]).css("display", "block");
+                createChart3(list);
+            };
+            box.append(buttlist[4]);
+            buttlist[4].onclick = function() {
                 downloadform(list);
             };
         }
@@ -176,6 +181,11 @@
                 end: 100
             }],
             tooltip: {},
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
             legend: {
                 data: ['人数']
             },
@@ -252,6 +262,11 @@
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
             },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
             legend: {
                 orient: 'vertical',
                 left: 'left',
@@ -270,6 +285,115 @@
                         shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
                 }
+            }]
+        };
+        myChart.hideLoading();
+        myChart.setOption(option);
+    }
+
+    /**
+     * 创建新人发帖指数
+     * @param {[type]} list 数据
+     */
+    function createChart3(list) {
+        /**
+         * 将可读字符串转为unix时间戳
+         * @param  {String} time 可读字符串
+         * @return {int}         unix时间戳
+         */
+        function toTimestamp(time) {
+            var ts = Date.parse(new Date(time));
+            return ts /= 1000;
+        }
+        /**
+         * 将unix时间戳转为可读字符串日期
+         * 示例：*年*月*日
+         * @param  {int} unix  unix时间戳
+         * @return {String}    可读字符串
+         */
+        function toDateStr(unix) {
+            var date = new Date();
+            date.setTime(unix * 1000);
+            return date.toLocaleDateString();
+        }
+        /*
+        Parse start
+         */
+        var i = 0,
+            cTime = Math.round(new Date().getTime() / 1000),
+            newMemTime = 604800,
+            lastTime = cTime - 2 * 604800, // 只需要改变这个即可确定最后的日期
+            data = [],
+            usrTime = 0;
+        while (cTime > lastTime) {
+            data[cTime] = [];
+            data[cTime]['post'] = 0;
+            data[cTime]['reply'] = 0;
+            for (var i in list) {
+                usrTime = toTimestamp(list[i]['join_time']);
+                if (usrTime < cTime - newMemTime)
+                    continue;
+                if (usrTime > cTime)
+                    break;
+                data[cTime]['post'] += list[i]['post_count'];
+                data[cTime]['reply'] += list[i]['reply_count'];
+            }
+            cTime -= 86400;
+        }
+        // console.debug(data);
+        /*
+        Draw start
+         */
+        var myChart = echarts.init(chartlist[2]),
+            timeInfo = [];
+        myChart.showLoading(); // 加载动画
+        data['cPostData'] = [];
+        data['cReplyData'] = [];
+        for (var time in data) {
+            if (isNaN(time))
+                continue;
+            timeInfo.push(toDateStr(time));
+            data['cPostData'].push(data[time]['post']);
+            data['cReplyData'].push(data[time]['reply']);
+        }
+        option = { // 指定图表的配置项和数据
+            title: {
+                text: '新人发帖指数',
+                subtext: '(°∀°)ﾉ'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data: ['7日内注册者发帖数', '7日内注册者回复数']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: timeInfo
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                name: '7日内注册者发帖数',
+                type: 'line',
+                data: data['cPostData']
+            }, {
+                name: '7日内注册者回复数',
+                type: 'line',
+                data: data['cReplyData']
             }]
         };
         myChart.hideLoading();
