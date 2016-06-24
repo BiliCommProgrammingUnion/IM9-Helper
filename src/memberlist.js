@@ -112,20 +112,29 @@
             list = list.reverse(); //倒序
             box.append(buttlist[1]);
             buttlist[1].onclick = function() {
-                chartlist.css("display", "none");
+                chartlist.css('display', 'none');
                 $(chartlist[0]).css("display", "block");
+                if ($(chartlist[0]).children().length) {
+                    return;
+                }
                 createChart(list);
             };
             box.append(buttlist[2]);
             buttlist[2].onclick = function() {
-                chartlist.css("display", "none");
+                chartlist.css('display', 'none');
                 $(chartlist[1]).css("display", "block");
+                if ($(chartlist[1]).children().length) {
+                    return;
+                }
                 createChart2(list);
             };
             box.append(buttlist[3]);
             buttlist[3].onclick = function() {
-                chartlist.css("display", "none");
+                chartlist.css('display', 'none');
                 $(chartlist[2]).css("display", "block");
+                if ($(chartlist[2]).children().length) {
+                    return;
+                }
                 createChart3(list);
             };
             box.append(buttlist[4]);
@@ -173,6 +182,7 @@
                 text: '人数分布',
                 subtext: tableInfo
             },
+            backgroundColor: '#fff',
             dataZoom: [{ // 这个dataZoom组件，默认控制x轴。
                 type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
                 start: 0, // 左边在 10% 的位置。
@@ -260,6 +270,7 @@
                 subtext: tableInfo,
                 x: 'center'
             },
+            backgroundColor: '#fff',
             tooltip: {
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
@@ -363,6 +374,7 @@
                 text: '新人发帖指数',
                 subtext: tableInfo
             },
+            backgroundColor: '#fff',
             tooltip: {
                 trigger: 'axis'
             },
