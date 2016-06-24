@@ -36,17 +36,18 @@
         });
         _hasHelper = true;
     }
-    var aValue = ["获取数据", "加入时间分布", "注册时间分布", "新人发帖指数", "下载表格"];
-    var box = $("<div class='chartbox'></div>").insertBefore(".table-nav"); // 图表盒
-    var chartlist = $(strmult('<div class ="chart"></div>', 3)).css("display", "none").appendTo(box); // 图表列表
-    var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box); // 信息显示区
-    var buttlist = $(strmult('<input type = "button" class = "chartbutton"/>', aValue.length)).each(function(i) {
-        $(this).val(aValue[i]);
-    }); // 按钮列表
+    var aValue = ["获取数据", "加入时间分布", "注册时间分布", "新人发帖指数", "下载表格"],
+        box = $("<div class='chartbox'></div>").insertBefore(".table-nav"), // 图表盒
+        chartlist = $(strmult('<div class ="chart"></div>', 3)).css("display", "none").appendTo(box), // 图表列表
+        chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box), // 信息显示区
+        buttlist = $(strmult('<input type = "button" class = "chartbutton"/>', aValue.length)).each(function(i) {
+            $(this).val(aValue[i]);
+        }); // 按钮列表
     box.append(buttlist[0]);
     $(".chartbutton").click(MemberListCollect);
-    var list = [];
-    var totalPage;
+    var list = [],
+        totalPage, tableInfo;
+    tableInfo = $("#community_name").html() + " " + 　new Date().toLocaleDateString(); // 获得表后缀
 
     /**
      * 获取成员列表信息
@@ -169,7 +170,8 @@
         }
         var option = { // 指定图表的配置项和数据
             title: {
-                text: '人数分布'
+                text: '人数分布',
+                subtext: tableInfo
             },
             dataZoom: [{ // 这个dataZoom组件，默认控制x轴。
                 type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
@@ -255,7 +257,7 @@
         option = { // 指定图表的配置项和数据
             title: {
                 text: '成员注册时间分布图',
-                subtext: '>_<',
+                subtext: tableInfo,
                 x: 'center'
             },
             tooltip: {
@@ -359,7 +361,7 @@
         option = { // 指定图表的配置项和数据
             title: {
                 text: '新人发帖指数',
-                subtext: '(°∀°)ﾉ'
+                subtext: tableInfo
             },
             tooltip: {
                 trigger: 'axis'
