@@ -114,12 +114,14 @@
             buttlist[1].onclick = function() {
                 chartlist.css("display", "none");
                 $(chartlist[0]).css("display", "block");
+                if($(chartlist[0]).children().length){return}
                 createChart(list);
             };
             box.append(buttlist[2]);
             buttlist[2].onclick = function() {
                 chartlist.css("display", "none");
                 $(chartlist[1]).css("display", "block");
+                if($(chartlist[1]).children().length){return}
                 createChart2(list);
             };
             box.append(buttlist[3]);
@@ -166,6 +168,7 @@
             title: {
                 text: '人数分布'
             },
+            backgroundColor: '#fff',
             dataZoom: [{ // 这个dataZoom组件，默认控制x轴。
                 type: 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
                 start: 0, // 左边在 10% 的位置。
@@ -226,9 +229,9 @@
             }
             return data;
         }
-        var datares = memberDataHandle(list);
         var myChart = echarts.init(chartlist[1]);
         myChart.showLoading(); // 加载动画
+        var datares = memberDataHandle(list);
         var datatime = [];
         var datamember = [];
 
@@ -248,6 +251,7 @@
                 subtext: '>_<',
                 x: 'center'
             },
+            backgroundColor: '#fff',
             tooltip: {
                 trigger: 'item',
                 formatter: "{a} <br/>{b} : {c} ({d}%)"
