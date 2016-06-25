@@ -46,11 +46,11 @@ if (_hasHelper) {
     var tableInfo = $("#community_name").html() + " " + 　new Date().toLocaleDateString();
     // 选择页面
     if (_url.startWith("http://www.im9.com/manage/manage-MemberList.html")) { // 在用户列表界面
-        $.getScript(_baseUrl + "/MemberList.js");
+        $.getScript(_baseUrl + "/MemberListPage.js");
     } else if (_url.startWith("http://www.im9.com/manage/manage-PostList.html")) { // 在帖子界面
-        $.getScript(_baseUrl + "/Article.js");
+        $.getScript(_baseUrl + "/PostListPage.js");
     } else if (_url.startWith("http://www.im9.com/manage/manage-activeCalculate.html")) { // 在圈统计界面
-        $.getScript(_baseUrl + "/ActiveCalculate.js");
+        $.getScript(_baseUrl + "/ActiveCalculatePage.js");
     } else {
         _hasHelper = false;
         alert('请在兴趣圈管理界面使用！');
