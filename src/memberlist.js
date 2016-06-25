@@ -21,9 +21,9 @@
     }
     var aValue = ["获取数据", "加入时间分布", "入圈时间分布", "新人发帖指数", "下载表格"],
         box = $("<div class='chartbox'></div>").insertBefore(".table-nav"), // 图表盒
-        chartlist = $('<div class ="chart"></div>'.strmult(3)).css("display", "none").appendTo(box), // 图表列表
+        chartlist = $('<div class ="chart"></div>'.x(3)).css("display", "none").appendTo(box), // 图表列表
         chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box), // 信息显示区
-        buttlist = $('<input type = "button" class = "chartbutton"/>'.strmult(aValue.length)).each(function(i) {
+        buttlist = $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).each(function(i) {
             $(this).val(aValue[i]);
         }); // 按钮列表
     box.append(buttlist[0]);
@@ -130,12 +130,12 @@
 
     /**
      * 生成图表
-     * @param {[type]} list 数据
+     * @param {Array} list 数据
      */
     function createChart(list) {
         function memberDataHandle(list) { //数据处理
-            var data = [];
-            var timebase;
+            var data = [],
+                timebase;
 
             function timereset(time) { //调整为一天开始
                 return time.slice(0, 10);
@@ -150,11 +150,11 @@
             }
             return data;
         }
-        var myChart = echarts.init(chartlist[0]);
+        var myChart = echarts.init(chartlist[0]),
+            datatime = [],
+            datamember = [],
+            datares = memberDataHandle(list);
         myChart.showLoading(); // 加载动画
-        var datatime = [];
-        var datamember = [];
-        var datares = memberDataHandle(list);
         for (var e in datares) { // 取出数据，放入坐标轴
             datatime.push(e);
             datamember.push(datares[e]);
@@ -209,18 +209,18 @@
 
     /**
      * 创建入圈时间图表
-     * @param {[type]} list 数据
+     * @param {Array} list 数据
      */
     function createChart2(list) {
         function memberDataHandle(list) { // 数据处理
-            var data = [];
+            var data = [],
+                memberid;
             data["2012年前"] = 0;
             data["2012"] = 0;
             data["2013"] = 0;
             data["2014"] = 0;
             data["2015"] = 0;
             data["2016"] = 0;
-            var memberid;
             for (var i in list) {
                 memberid = list[i]['member_id'];
                 if (memberid >= 20593643) {
@@ -239,11 +239,11 @@
             }
             return data;
         }
-        var datares = memberDataHandle(list);
-        var myChart = echarts.init(chartlist[1]);
+        var datares = memberDataHandle(list),
+            myChart = echarts.init(chartlist[1]),
+            datatime = [],
+            datamember = [];
         myChart.showLoading(); // 加载动画
-        var datatime = [];
-        var datamember = [];
 
         function newjson(name, value, target) {
             var json = {};
@@ -297,7 +297,7 @@
 
     /**
      * 创建新人发帖指数
-     * @param {[type]} list 数据
+     * @param {Array} list 数据
      */
     function createChart3(list) {
         /**

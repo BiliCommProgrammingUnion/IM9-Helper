@@ -19,13 +19,15 @@
     }
 
     var box = $("<div class='chartbox'></div>").prependTo(".group-table"); // 图表盒
-    $('<div class ="chart" style = "height:660px"></div>').css("display", "none").appendTo(box);
-    var chartlist = $('.chart'); // 图表列表
-    var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box); // 信息显示区
-    $('<input type = "button" class = "chartbutton" value = "生成图表"/><input type = "button" class = "chartbutton" value = "生成退圈图表"/>').appendTo(box);
+    $('<div class ="chart"></div>'.x(2)).css("display", "none").appendTo(box);
+    var chartlist = $('.chart'), // 图表列表
+        chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box),
+        aValue = ['生成图表', '生成退圈图表']; // 信息显示区
+    $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).appendTo(box).each(function(i) {
+        $(this).val(aValue[i]);
+    });
     var weekinfo = [];
-    var weekinfosrc = $($("table").children()[1]).children();
-    weekinfosrc.each(function() {
+    $('tbody tr').each(function() {
         var a = [];
         weekinfo.push(a);
         $(this).children().each(function() {
@@ -35,11 +37,13 @@
     weekinfo.reverse();
     weekdata = dataHandle(weekinfo);
     $('.chartbutton:first').click(function() {
-        $(chartlist[0]).css("display", "block");
+        chartlist.css('display', 'none');
+        $(chartlist[0]).height('660px').css("display", "block");
         createChart(weekdata);
         chartinfo.text("七日数据");
     });
     $('.chartbutton:last').click(function() {
+        chartlist.css('display', 'none');
         $(chartlist[1]).css("display", "block");
         createChart2(weekdata);
         chartinfo.text("退圈数据");

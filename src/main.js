@@ -7,7 +7,7 @@ var _url = document.URL,
  * @param  {int} n    times
  * @return {String} string
  */
-String.prototype.strmult = function(n) {
+String.prototype.x = function(n) {
     var html = '';
     var i = 0;
     while (i < n) {
