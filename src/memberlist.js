@@ -3,23 +3,6 @@
  * @author airhiki, CharTen, KAAAsS
  */
 (function() {
-
-    /**
-     * 字符串乘法
-     * @param  {String} s pre-string
-     * @param  {int} n    times
-     * @return {String} string
-     */
-    function strmult(s, n) {
-        var html = '';
-        var i = 0;
-        while (i < n) {
-            html += s;
-            i++;
-        }
-        return html;
-    }
-
     /*
      * 添加各类引用
      */
@@ -36,11 +19,11 @@
         });
         _hasHelper = true;
     }
-    var aValue = ["获取数据", "加入时间分布", "注册时间分布", "新人发帖指数", "下载表格"],
+    var aValue = ["获取数据", "加入时间分布", "入圈时间分布", "新人发帖指数", "下载表格"],
         box = $("<div class='chartbox'></div>").insertBefore(".table-nav"), // 图表盒
-        chartlist = $(strmult('<div class ="chart"></div>', 3)).css("display", "none").appendTo(box), // 图表列表
+        chartlist = $('<div class ="chart"></div>'.strmult(3)).css("display", "none").appendTo(box), // 图表列表
         chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box), // 信息显示区
-        buttlist = $(strmult('<input type = "button" class = "chartbutton"/>', aValue.length)).each(function(i) {
+        buttlist = $('<input type = "button" class = "chartbutton"/>'.strmult(aValue.length)).each(function(i) {
             $(this).val(aValue[i]);
         }); // 按钮列表
     box.append(buttlist[0]);
@@ -191,7 +174,15 @@
                 start: 0,
                 end: 100
             }],
-            tooltip: {},
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
             toolbox: {
                 feature: {
                     saveAsImage: {}
@@ -201,7 +192,8 @@
                 data: ['人数']
             },
             xAxis: {
-                data: datatime
+                data: datatime,
+                boundaryGap: false
             },
             yAxis: {},
             series: [{
@@ -216,7 +208,7 @@
     }
 
     /**
-     * 创建注册时间图表
+     * 创建入圈时间图表
      * @param {[type]} list 数据
      */
     function createChart2(list) {
@@ -265,7 +257,7 @@
         }
         option = { // 指定图表的配置项和数据
             title: {
-                text: '成员注册时间分布图',
+                text: '成员入圈时间分布图',
                 subtext: tableInfo,
                 x: 'center'
             },
@@ -285,7 +277,7 @@
                 data: datatime
             },
             series: [{
-                name: '注册时间',
+                name: '入圈时间',
                 type: 'pie',
                 radius: '55%',
                 center: ['50%', '60%'],
@@ -378,7 +370,7 @@
                 trigger: 'axis'
             },
             legend: {
-                data: ['7日内注册者发帖数', '7日内注册者回复数']
+                data: ['7日内入圈者发帖数', '7日内入圈者回复数']
             },
             grid: {
                 left: '3%',
@@ -400,11 +392,11 @@
                 type: 'value'
             },
             series: [{
-                name: '7日内注册者发帖数',
+                name: '7日内入圈者发帖数',
                 type: 'line',
                 data: data['cPostData']
             }, {
-                name: '7日内注册者回复数',
+                name: '7日内入圈者回复数',
                 type: 'line',
                 data: data['cReplyData']
             }]

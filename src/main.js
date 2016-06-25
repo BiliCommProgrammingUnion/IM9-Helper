@@ -2,6 +2,25 @@
 var _url = document.URL,
     _baseUrl = "http://git.oschina.net/BCPU/IM9-Helper/raw/master/src";
 
+/**
+ * 字符串乘法
+ * @param  {int} n    times
+ * @return {String} string
+ */
+String.prototype.strmult = function(n) {
+    var html = '';
+    var i = 0;
+    while (i < n) {
+        html += this;
+        i++;
+    }
+    return html;
+};
+/**
+ * 字符串是否开始于
+ * @param  {String} str    待比较的字符串
+ * @return {String} string
+ */
 String.prototype.startWith = function(str) {
     if (str == null || str === "" || this.length === 0 || str.length > this.length)
         return false;
@@ -11,6 +30,7 @@ String.prototype.startWith = function(str) {
         return false;
     return true;
 };
+
 // 判断是否打开
 try {
     if (typeof('_hasHelper') === "undefined") {

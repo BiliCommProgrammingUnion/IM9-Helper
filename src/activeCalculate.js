@@ -1,7 +1,7 @@
 /**
-  * 最近七日的信息页面
-  * @author airhiki
-  */
+ * 最近七日的信息页面
+ * @author airhiki
+ */
 (function() {
     /*
      * 添加各类引用
@@ -35,9 +35,14 @@
     weekinfo.reverse();
     weekdata = dataHandle(weekinfo);
     $('.chartbutton:first').click(function() {
-        chartlist.css("display", "block");
+        $(chartlist[0]).css("display", "block");
         createChart(weekdata);
         chartinfo.text("七日数据");
+    });
+    $('.chartbutton:last').click(function() {
+        $(chartlist[1]).css("display", "block");
+        createChart2(weekdata);
+        chartinfo.text("退圈数据");
     });
 
     function dataHandle(list) { //数据处理
