@@ -18,9 +18,8 @@
         _hasHelper = true;
     }
 
-    var box = $("<div class='chartbox'></div>").prependTo(".group-table"); // 图表盒
-    $('<div class ="chart"></div>'.x(2)).css("display", "none").appendTo(box);
-    var chartlist = $('.chart'), // 图表列表
+    var box = $("<div class='chartbox'></div>").prependTo(".group-table"), // 图表盒
+        chartlist = $('<div class ="chart"></div>'.x(2)).css("display", "none").appendTo(box), // 图表列表
         chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box),
         aValue = ['生成图表', '生成退圈图表']; // 信息显示区
     $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).appendTo(box).each(function(i) {
