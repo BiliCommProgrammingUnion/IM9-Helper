@@ -17,30 +17,31 @@
         _hasHelper = true;
     }
 
-    var box = $("<div class='chartbox'></div>").appendTo(".main-content-page"); // 图表盒
-    var chartlist = $('<div class ="chart" style = "height:600px"></div>').css("display", "none").appendTo(box); // 图表列表
-    var chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box); // 信息显示区
-    var buttlist = $('<input type = "button" class = "chartbutton" value = "生成图表"/>');// 按钮列表
-    var weekinfo = [];
-    var weekinfosrc = $($("table").children()[1]).children()
+    var box = $("<div class='chartbox'></div>").appendTo(".main-content-page"),// 图表盒
+    	chartlist = $('<div class ="chart" style = "height:600px"></div>').css("display", "none").appendTo(box),// 图表列表
+    	chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box),// 信息显示区
+    	buttlist = $('<input type = "button" class = "chartbutton" value = "生成图表"/>'),// 按钮列表
+    	weekinfo = [],
+    	weekdata,
+    	weekinfosrc = $($("table").children()[1]).children();
     weekinfosrc.each(function() {
-        var a = []
+        var a = [];
         weekinfo.push(a);
         $(this).children().each(function() {
             a.push($(this).text());
         });
-    })//解析table
+    });//解析table
     weekinfo.reverse();
     weekdata = dataHandle(weekinfo);
     buttlist.click(function(){
         chartlist.css("display", "block");
-        createChart(weekdata);
         chartinfo.text("七日数据");
-    })
+        createChart(weekdata);
+    });
     box.append(buttlist);
     function dataHandle(list) { //数据处理
-        var data = [[],[],[],[],[]];
-        var e = 1;
+        var data = [[],[],[],[],[]],
+        	e = 1;
         for (var i in list) {
             data[0].push(list[i][0]);
             e = 1;
@@ -60,12 +61,12 @@
         myChart.showLoading(); // 加载动画
         var option = { // 指定图表的配置项和数据
             title: {
-                text: '兴趣圈周数据'
+                text: '兴趣圈七日数据'
             },
             backgroundColor: '#fff',
             grid: [
-                {top: '10%', height: '38%'},
-                {top: '56%', height: '38%'}
+                {top: '11%', height: '38%'},
+                {top: '57%', height: '38%'}
             ],
             tooltip: {
                 trigger: 'axis'
