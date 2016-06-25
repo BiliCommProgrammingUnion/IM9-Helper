@@ -1,5 +1,16 @@
-var _url = document.URL, _baseUrl = "http://git.oschina.net/BCPU/IM9-Helper/raw/master/src";
+/*jshint unused: false */
+var _url = document.URL,
+    _baseUrl = "http://git.oschina.net/BCPU/IM9-Helper/raw/master/src";
 
+String.prototype.startWith = function(str) {
+    if (str == null || str === "" || this.length === 0 || str.length > this.length)
+        return false;
+    if (this.substr(0, str.length) === str)
+        return true;
+    else
+        return false;
+    return true;
+};
 // 判断是否打开
 try {
     if (typeof('_hasHelper') === "undefined") {
@@ -11,11 +22,15 @@ try {
 if (_hasHelper) {
     alert('程序已经打开！');
 } else {
+    // 生成表数据
+    var tableInfo = $("#community_name").html() + " " + 　new Date().toLocaleDateString();
     // 选择页面
-    if (_url.slice(33, 43) === "MemberList") { // 在用户列表界面
-        $.getScript(_baseUrl + "/memberlist.js");
-    } else if (_url.slice(33, 41) === "PostList") { // 在用户列表界面
-        $.getScript(_baseUrl + "/article.js");
+    if (_url.startWith("http://www.im9.com/manage/manage-MemberList.html")) { // 在用户列表界面
+        $.getScript(_baseUrl + "/MemberList.js");
+    } else if (_url.startWith("http://www.im9.com/manage/manage-PostList.html")) { // 在帖子界面
+        $.getScript(_baseUrl + "/Article.js");
+    } else if (_url.startWith("http://www.im9.com/manage/manage-activeCalculate.html")) { // 在圈统计界面
+        $.getScript(_baseUrl + "/ActiveCalculate.js");
     } else {
         _hasHelper = false;
         alert('请在兴趣圈管理界面使用！');

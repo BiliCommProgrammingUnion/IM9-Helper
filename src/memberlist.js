@@ -1,6 +1,6 @@
 /**
  * 成员的信息页面
- * @author airhiki, CharTen
+ * @author airhiki, CharTen, KAAAsS
  */
 (function() {
 
@@ -46,8 +46,7 @@
     box.append(buttlist[0]);
     $(".chartbutton").click(MemberListCollect);
     var list = [],
-        totalPage, tableInfo;
-    tableInfo = $("#community_name").html() + " " + 　new Date().toLocaleDateString(); // 获得表后缀
+        totalPage;
 
     /**
      * 获取成员列表信息
