@@ -19,27 +19,25 @@
         });
         _hasHelper = true;
     }
-    var aValue = ["获取数据", "加入时间分布", "入圈时间分布", "新人发帖指数", "下载表格"],
+    var aValue = ["加入时间分布", "入圈时间分布", "新人发帖指数", "下载表格"],
         box = $("<div class='chartbox'></div>").insertBefore(".table-nav"), // 图表盒
         chartlist = $('<div class ="chart"></div>'.x(3)).css("display", "none").appendTo(box); // 图表列表
-        $('<div class="progress"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 0%">0%</div></div>').css("display", "none").appendTo(box);// 进度条
-    var    chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box), // 信息显示区
+    $('<div class="progress"><div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 0%">0%</div></div>').css("display", "none").appendTo(box); // 进度条
+    var chartinfo = $('<div class = "chartinfo">正在载入，请稍后……</div>').appendTo(box), // 信息显示区
         buttlist = $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).each(function(i) {
             $(this).val(aValue[i]);
         }); // 按钮列表
-    box.append(buttlist[0]);
-    $(".chartbutton").click(MemberListCollect);
+    memberListCollect();
     var list = [],
         totalPage;
 
     /**
      * 获取成员列表信息
      */
-    function MemberListCollect() {
+    function memberListCollect() {
         var i = 1, // 计数器
             loadimg = $("<img></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box),
             progress = 0;
-        $(buttlist[0]).css("display", "none"); // 隐藏按钮
         $('.progress').css("display", "block"); // 显示进度条
         function src(r) { // 被回调函数，处理返回数据，决定是否进行下一次请求
             // console.log(r);
@@ -100,35 +98,38 @@
             chartinfo.text("总人数：" + list.length + ' 总页数：' + totalPage);
             // console.log(list);
             list = list.reverse(); //倒序
-            box.append(buttlist[1]);
-            buttlist[1].onclick = function() {
+            box.append(buttlist[0]);
+            buttlist[0].onclick = function() {
                 chartlist.css('display', 'none');
+                box.scrollTo();
                 $(chartlist[0]).css("display", "block");
                 if ($(chartlist[0]).children().length) {
                     return;
                 }
                 createChart(list);
             };
-            box.append(buttlist[2]);
-            buttlist[2].onclick = function() {
+            box.append(buttlist[1]);
+            buttlist[1].onclick = function() {
                 chartlist.css('display', 'none');
+                box.scrollTo();
                 $(chartlist[1]).css("display", "block");
                 if ($(chartlist[1]).children().length) {
                     return;
                 }
                 createChart2(list);
             };
-            box.append(buttlist[3]);
-            buttlist[3].onclick = function() {
+            box.append(buttlist[2]);
+            buttlist[2].onclick = function() {
                 chartlist.css('display', 'none');
+                box.scrollTo();
                 $(chartlist[2]).css("display", "block");
                 if ($(chartlist[2]).children().length) {
                     return;
                 }
                 createChart3(list);
             };
-            box.append(buttlist[4]);
-            buttlist[4].onclick = function() {
+            box.append(buttlist[3]);
+            buttlist[3].onclick = function() {
                 downloadform(list);
             };
         }
@@ -137,7 +138,7 @@
     }
 
     /**
-     * 生成图表
+     * 生成圈人数变化图表
      * @param {Array} list 数据
      */
     function createChart(list) {
@@ -169,7 +170,7 @@
         }
         var option = { // 指定图表的配置项和数据
             title: {
-                text: '人数分布',
+                text: '圈人数变化',
                 subtext: tableInfo
             },
             backgroundColor: '#fff',
@@ -185,7 +186,7 @@
             grid: {
                 left: '3%',
                 right: '4%',
-                bottom: '3%',
+                bottom: '8%',
                 containLabel: true
             },
             tooltip: {
@@ -197,7 +198,7 @@
                 }
             },
             legend: {
-                data: ['人数']
+                data: ['当日人数变化']
             },
             xAxis: {
                 data: datatime,
@@ -205,7 +206,7 @@
             },
             yAxis: {},
             series: [{
-                name: '人数',
+                name: '当日人数变化',
                 type: 'line',
                 data: datamember
             }]

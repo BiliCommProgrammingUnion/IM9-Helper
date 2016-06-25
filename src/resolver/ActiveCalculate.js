@@ -22,6 +22,7 @@
             chartinfo.html('');
             $(chartlist[0]).height('660px').css("display", "block");
             $('#cLoad').css("display", "none");
+            box.scrollTo(); // 移动到这里
             createChart(weekdata);
         });
         // 外部样式表
@@ -33,10 +34,11 @@
         _hasHelper = true;
     }
 
-    var box = $("<div class='chartbox'></div>").prependTo(".group-table"), // 图表盒
+    var box = $("<div class='chartbox'></div>").prependTo(".group-table"); // 图表盒
         chartlist = $('<div class ="chart"></div>').css("display", "none").appendTo(box), // 图表列表
         chartinfo = $('<div class = "chartinfo">正在载入，请稍后……</div>').appendTo(box);
-        $("<img id='cLoad'></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box);
+    $("<img id='cLoad'></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box);
+
     function dataHandle(list) { //数据处理
         var data = [
             [],
@@ -88,7 +90,7 @@
                 }
             },
             legend: {
-                data: ['日增人数', '总人数', '发帖', '回复']
+                data: ['日增人数', '退圈人数', '总人数', '发帖', '回复']
             },
             xAxis: [{
                 gridIndex: 0,
