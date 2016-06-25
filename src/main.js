@@ -44,6 +44,7 @@ if (_hasHelper) {
 } else {
     // 生成表数据
     var tableInfo = $("#community_name").html() + " " + 　new Date().toLocaleDateString();
+	var commId = $("option:contains(" + $("#community_name").html() + ")").val();
     // 引入必须的jq插件
     $.getScript(_baseUrl + "/jquery.im9func.js", function() {
         // 选择页面

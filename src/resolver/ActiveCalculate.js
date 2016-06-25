@@ -35,20 +35,15 @@
     }
 
     var box = $("<div class='chartbox'></div>").prependTo(".group-table"); // 图表盒
-        chartlist = $('<div class ="chart"></div>').css("display", "none").appendTo(box), // 图表列表
+    chartlist = $('<div class ="chart"></div>').css("display", "none").appendTo(box), // 图表列表
         chartinfo = $('<div class = "chartinfo">正在载入，请稍后……</div>').appendTo(box);
     $("<img id='cLoad'></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box);
 
     function dataHandle(list) { //数据处理
-        var data = [
-            [],
-            [],
-            [],
-            [],
-            []
-        ];
+        var data = storedDataFetch();
         var e = 1;
         for (var i in list) {
+            if (data[0].indexOf(list[i][0]) > -1) continue;
             data[0].push(list[i][0]);
             e = 1;
             while (e < 5) {
@@ -56,7 +51,22 @@
                 e++;
             }
         }
+        $.store('activeCalculateData' + commId, data);
         return data;
+    }
+
+    function storedDataFetch() {
+        var r = $.store('activeCalculateData' + commId);
+        if (!r) {
+            return [
+                [],
+                [],
+                [],
+                [],
+                []
+            ];
+        }
+        return $.parseJSON(r);
     }
     /**
      * 生成图表
