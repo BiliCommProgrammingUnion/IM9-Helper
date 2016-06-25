@@ -21,8 +21,9 @@
     }
     var aValue = ["获取数据", "加入时间分布", "入圈时间分布", "新人发帖指数", "下载表格"],
         box = $("<div class='chartbox'></div>").insertBefore(".table-nav"), // 图表盒
-        chartlist = $('<div class ="chart"></div>'.x(3)).css("display", "none").appendTo(box), // 图表列表
-        chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box), // 信息显示区
+        chartlist = $('<div class ="chart"></div>'.x(3)).css("display", "none").appendTo(box); // 图表列表
+        $('<div class="progress"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 0%">0%</div></div>').css("display", "none").appendTo(box);// 进度条
+    var    chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box), // 信息显示区
         buttlist = $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).each(function(i) {
             $(this).val(aValue[i]);
         }); // 按钮列表
@@ -35,9 +36,11 @@
      * 获取成员列表信息
      */
     function MemberListCollect() {
-        var i = 1; // 计数器
-        var loadimg = $("<img></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box);
+        var i = 1, // 计数器
+            loadimg = $("<img></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box),
+            progress = 0;
         $(buttlist[0]).css("display", "none"); // 隐藏按钮
+        $('.progress').css("display", "block"); // 显示进度条
         function src(r) { // 被回调函数，处理返回数据，决定是否进行下一次请求
             // console.log(r);
             totalPage = r.data['total_page'];
@@ -46,11 +49,15 @@
                 list.push(result[e]); // 添加元素
             }
             i++;
-            if (i <= totalPage) { //决定是否进行下一次请求,递归调用
-                //console.log('当前页数i');
+            if (i <= totalPage) { // 决定是否进行下一次请求,递归调用
+                // console.log('当前页数i');
+                progress = Math.floor(i / totalPage * 100);
+                $('.progress').children().attr("aria-valuenow", progress)
+                    .css("width", progress + '%').text(progress + '%'); // 更改进度条
                 chartinfo.text("已加载" + i + "页，共" + totalPage + "页……");
                 loadList(i, src);
-            } else { //获取数据完毕 请求结束 显示结果
+            } else { // 获取数据完毕 请求结束 显示结果
+                $('.progress').css("display", "none");
                 loadimg.css("display", "none");
                 afterGetList();
             }
@@ -66,6 +73,7 @@
             var para = getAjaxData({
                 "page_no": no
             }); // 准备参数
+            para['page_size'] = 100;
             para.captcha = window['captcha_key'];
             para.ts = (function() {
                 var d = new Date();
@@ -375,6 +383,7 @@
             grid: {
                 left: '3%',
                 right: '4%',
+                top: '17%',
                 bottom: '3%',
                 containLabel: true
             },
@@ -388,16 +397,22 @@
                 boundaryGap: false,
                 data: timeInfo
             },
-            yAxis: {
+            yAxis: [{
+                name: '发帖数',
                 type: 'value'
-            },
+            }, {
+                name: '回复数',
+                type: 'value'
+            }],
             series: [{
                 name: '7日内入圈者发帖数',
                 type: 'line',
+                yAxisIndex: [0],
                 data: data['cPostData']
             }, {
                 name: '7日内入圈者回复数',
                 type: 'line',
+                yAxisIndex: [1],
                 data: data['cReplyData']
             }]
         };
