@@ -1,6 +1,6 @@
 /**
  * 最近七日的信息页面
- * @author airhiki
+ * @author airhiki, KAAAsS
  */
 (function() {
     /*
@@ -8,7 +8,22 @@
      */
     if (!_hasHelper) {
         // 加入echarts
-        $.getScript("http://cdn.bootcss.com/echarts/3.1.10/echarts.min.js");
+        $.getScript("http://cdn.bootcss.com/echarts/3.1.10/echarts.min.js", function() {
+            var weekinfo = [];
+            $('tbody tr').each(function() {
+                var a = [];
+                weekinfo.push(a);
+                $(this).children().each(function() {
+                    a.push($(this).text());
+                });
+            }); // 解析table
+            weekinfo.reverse();
+            weekdata = dataHandle(weekinfo);
+            chartinfo.html('');
+            $(chartlist[0]).height('660px').css("display", "block");
+            $('#cLoad').css("display", "none");
+            createChart(weekdata);
+        });
         // 外部样式表
         $("head").append("<link>").children("link:last").attr({
             rel: "stylesheet",
@@ -19,35 +34,9 @@
     }
 
     var box = $("<div class='chartbox'></div>").prependTo(".group-table"), // 图表盒
-        chartlist = $('<div class ="chart"></div>'.x(2)).css("display", "none").appendTo(box), // 图表列表
-        chartinfo = $('<div class = "chartinfo">请点击按钮</div>').appendTo(box),
-        aValue = ['生成图表', '生成退圈图表']; // 信息显示区
-    $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).appendTo(box).each(function(i) {
-        $(this).val(aValue[i]);
-    });
-    var weekinfo = [];
-    $('tbody tr').each(function() {
-        var a = [];
-        weekinfo.push(a);
-        $(this).children().each(function() {
-            a.push($(this).text());
-        });
-    }); // 解析table
-    weekinfo.reverse();
-    weekdata = dataHandle(weekinfo);
-    $('.chartbutton:first').click(function() {
-        chartlist.css('display', 'none');
-        $(chartlist[0]).height('660px').css("display", "block");
-        createChart(weekdata);
-        chartinfo.text("七日数据");
-    });
-    $('.chartbutton:last').click(function() {
-        chartlist.css('display', 'none');
-        $(chartlist[1]).css("display", "block");
-        createChart2(weekdata);
-        chartinfo.text("退圈数据");
-    });
-
+        chartlist = $('<div class ="chart"></div>').css("display", "none").appendTo(box), // 图表列表
+        chartinfo = $('<div class = "chartinfo">正在载入，请稍后……</div>').appendTo(box);
+        $("<img id='cLoad'></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box);
     function dataHandle(list) { //数据处理
         var data = [
             [],
@@ -72,8 +61,11 @@
      * @param {Array} list 数据
      */
     function createChart(datares) {
-        var myChart = echarts.init(chartlist[0]);
+        var myChart = echarts.init(chartlist[0]),
+            tData = ['NaN'];
         myChart.showLoading(); // 加载动画
+        for (var i = 1; i < datares[0].length; i++)
+            tData[i] = datares[1][i] - (datares[2][i] - datares[2][i - 1]); // 退圈人数=当日新增-(当日成员-前日成员)
         var option = { // 指定图表的配置项和数据
             title: {
                 text: '兴趣圈周数据',
@@ -109,7 +101,7 @@
             }],
             yAxis: [{
                 gridIndex: 0,
-                name: '日增人数',
+                name: '日增人数/退圈人数',
                 type: 'value'
             }, {
                 gridIndex: 0,
@@ -131,6 +123,12 @@
                 xAxisIndex: [0],
                 yAxisIndex: [0],
                 data: datares[1]
+            }, {
+                name: '退圈人数',
+                type: 'line',
+                xAxisIndex: [0],
+                yAxisIndex: [0],
+                data: tData
             }, {
                 name: '总人数',
                 type: 'line',

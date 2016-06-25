@@ -90,7 +90,7 @@
          */
         function afterGetList() {
             chartinfo.text("总人数：" + list.length + ' 总页数：' + totalPage);
-            //console.log(list);
+            // console.log(list);
             list = list.reverse(); //倒序
             box.append(buttlist[1]);
             buttlist[1].onclick = function() {
