@@ -142,32 +142,30 @@
      * @param {Array} list 数据
      */
     function createChart(list) {
-        function memberDataHandle(list) { //数据处理
+        function DataHandle(list) { //数据处理
             var data = [],
+                datares = [[],[]],  
+                timecount = new Date(list[0]['join_time'].slice(0,10)+" 00:05:00"),//起始时间
+                timeend = new Date(),
                 timebase;
 
-            function timereset(time) { //调整为一天开始
-                return time.slice(0, 10);
+            while(timecount < timeend){//填充时间轴
+                data[timecount.toLocaleDateString()] = 0;
+                timecount.setTime(timecount.getTime()+86400000);//续一天
             }
-            for (var i in list) {
-                timebase = timereset(list[i]['join_time']);
-                if (data[timebase]) {
-                    data[timebase]++;
-                } else {
-                    data[timebase] = 1;
-                }
+            for (var i in list) {//填数据
+                timebase = new Date(list[i]['join_time']);
+                data[timebase.toLocaleDateString()]++;
             }
-            return data;
+            for (var e in data) { //拆分坐标轴
+                datares[0].push(e);
+                datares[1].push(data[e]);
+            }
+            return datares;
         }
         var myChart = echarts.init(chartlist[0]),
-            datatime = [],
-            datamember = [],
-            datares = memberDataHandle(list);
+            datares = DataHandle(list);
         myChart.showLoading(); // 加载动画
-        for (var e in datares) { // 取出数据，放入坐标轴
-            datatime.push(e);
-            datamember.push(datares[e]);
-        }
         var option = { // 指定图表的配置项和数据
             title: {
                 text: '圈人数变化',
@@ -201,14 +199,14 @@
                 data: ['当日人数变化']
             },
             xAxis: {
-                data: datatime,
+                data: datares[0],
                 boundaryGap: false
             },
             yAxis: {},
             series: [{
                 name: '当日人数变化',
                 type: 'line',
-                data: datamember
+                data: datares[1]
             }]
         };
         // 使用刚指定的配置项和数据显示图表。
@@ -221,8 +219,9 @@
      * @param {Array} list 数据
      */
     function createChart2(list) {
-        function memberDataHandle(list) { // 数据处理
+        function DataHandle(list) { // 数据处理
             var data = [],
+                datares =[[],[]],
                 memberid;
             data["2012年前"] = 0;
             data["2012"] = 0;
@@ -246,27 +245,26 @@
                     data["2012年前"]++;
                 }
             }
-            return data;
+            function newjson(name, value, target) {
+                var json = {};
+                json.name = name;
+                json.value = value;
+                target.push(json);
+            }
+            for (var e in data) {
+                datares[0].push(e);
+                newjson(e, data[e], datares[1]);
+            }
+            return datares;
         }
-        var datares = memberDataHandle(list),
-            myChart = echarts.init(chartlist[1]),
-            datatime = [],
-            datamember = [];
-        myChart.showLoading(); // 加载动画
 
-        function newjson(name, value, target) {
-            var json = {};
-            json.name = name;
-            json.value = value;
-            target.push(json);
-        }
-        for (var e in datares) {
-            datatime[e] = e;
-            newjson(e, datares[e], datamember);
-        }
+        var datares = DataHandle(list),
+            myChart = echarts.init(chartlist[1]);
+
+        myChart.showLoading();// 加载动画
         option = { // 指定图表的配置项和数据
             title: {
-                text: '成员入圈时间分布图',
+                text: '成员注册时间分布图',
                 subtext: tableInfo,
                 x: 'center'
             },
@@ -283,14 +281,14 @@
             legend: {
                 orient: 'vertical',
                 left: 'left',
-                data: datatime
+                data: datares[0]
             },
             series: [{
-                name: '入圈时间',
+                name: '注册时间',
                 type: 'pie',
                 radius: '55%',
                 center: ['50%', '60%'],
-                data: datamember,
+                data: datares[1],
                 itemStyle: {
                     emphasis: {
                         shadowBlur: 10,
