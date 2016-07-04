@@ -2,6 +2,8 @@
  * 成员的信息页面
  * @author airhiki, CharTen, KAAAsS
  */
+/*jshint unused: false */
+/*jshint evil: true */
 (function() {
     /*
      * 添加各类引用
@@ -98,7 +100,6 @@
             $chartinfo.text("总人数：" + list.length + ' 总页数：' + totalPage);
             // console.log(list);
             list = list.reverse(); //倒序
-            var funcList = [createChart, createChart2, createChart3, createChart4];
             $buttlist.each(function(index, el) {
                 if (index < $buttlist.length - 1) { // 除去表格按钮
                     $box.append(el);
@@ -109,7 +110,7 @@
                         if ($($chartlist[index]).children().length) {
                             return;
                         }
-                        funcList[index](list);
+                        eval('createChart' + (index + 1))(list);
                     };
                 }
             });
@@ -126,7 +127,7 @@
      * 生成圈人数变化图表
      * @param {Array} list 数据
      */
-    function createChart(list) {
+    function createChart1(list) {
         function dataHandle(list) { //数据处理
             var data = [],
                 datares = [
