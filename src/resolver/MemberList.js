@@ -19,12 +19,12 @@
         });
         _hasHelper = true;
     }
-    var aValue = ["加入时间分布", "入圈时间分布", "新人发帖指数", "下载表格"],
-        box = $("<div class='chartbox'></div>").insertBefore(".table-nav"), // 图表盒
-        chartlist = $('<div class ="chart"></div>'.x(3)).css("display", "none").appendTo(box); // 图表列表
-    $('<div class="progress"><div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 0%">0%</div></div>').css("display", "none").appendTo(box); // 进度条
-    var chartinfo = $('<div class = "chartinfo">正在载入，请稍后……</div>').appendTo(box), // 信息显示区
-        buttlist = $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).each(function(i) {
+    var aValue = ["加入时间分布", "入圈时间分布", "新人发帖指数", "发言成员分布", "下载表格"],
+        $box = $("<div class='chartbox'></div>").insertBefore(".table-nav"), // 图表盒
+        $chartlist = $('<div class ="chart"></div>'.x(aValue.length - 1)).css("display", "none").appendTo($box); // 图表列表
+    $('<div class="progress"><div class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 0%">0%</div></div>').css("display", "none").appendTo($box); // 进度条
+    var $chartinfo = $('<div class = "chartinfo">正在载入，请稍后……</div>').appendTo($box), // 信息显示区
+        $buttlist = $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).each(function(i) {
             $(this).val(aValue[i]);
         }); // 按钮列表
     memberListCollect();
@@ -36,7 +36,7 @@
      */
     function memberListCollect() {
         var i = 1, // 计数器
-            loadimg = $("<img></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo(box),
+            loadimg = $("<img></img>").attr("src", "http://static.yo9.com/web/static/loading.gif?e11a9bf").css("margin", "50px 350px").prependTo($box),
             progress = 0;
         $('.progress').css("display", "block"); // 显示进度条
         function src(r) { // 被回调函数，处理返回数据，决定是否进行下一次请求
@@ -52,7 +52,7 @@
                 progress = Math.floor(i / totalPage * 100);
                 $('.progress').children().attr("aria-valuenow", progress)
                     .css("width", progress + '%').text(progress + '%'); // 更改进度条
-                chartinfo.text("已加载" + i + "页，共" + totalPage + "页……");
+                $chartinfo.text("已加载" + i + "页，共" + totalPage + "页……");
                 loadList(i, src);
             } else { // 获取数据完毕 请求结束 显示结果
                 $('.progress').css("display", "none");
@@ -95,46 +95,31 @@
          * 获取List后的回调
          */
         function afterGetList() {
-            chartinfo.text("总人数：" + list.length + ' 总页数：' + totalPage);
+            $chartinfo.text("总人数：" + list.length + ' 总页数：' + totalPage);
             // console.log(list);
             list = list.reverse(); //倒序
-            box.append(buttlist[0]);
-            buttlist[0].onclick = function() {
-                chartlist.css('display', 'none');
-                box.scrollTo();
-                $(chartlist[0]).css("display", "block");
-                if ($(chartlist[0]).children().length) {
-                    return;
+            var funcList = [createChart, createChart2, createChart3, createChart4];
+            $buttlist.each(function(index, el) {
+                if (index < $buttlist.length - 1) { // 除去表格按钮
+                    $box.append(el);
+                    el.onclick = function() {
+                        $chartlist.css('display', 'none');
+                        $box.scrollTo();
+                        $($chartlist[index]).css("display", "block");
+                        if ($($chartlist[index]).children().length) {
+                            return;
+                        }
+                        funcList[index](list);
+                    };
                 }
-                createChart(list);
-            };
-            box.append(buttlist[1]);
-            buttlist[1].onclick = function() {
-                chartlist.css('display', 'none');
-                box.scrollTo();
-                $(chartlist[1]).css("display", "block");
-                if ($(chartlist[1]).children().length) {
-                    return;
-                }
-                createChart2(list);
-            };
-            box.append(buttlist[2]);
-            buttlist[2].onclick = function() {
-                chartlist.css('display', 'none');
-                box.scrollTo();
-                $(chartlist[2]).css("display", "block");
-                if ($(chartlist[2]).children().length) {
-                    return;
-                }
-                createChart3(list);
-            };
-            box.append(buttlist[3]);
-            buttlist[3].onclick = function() {
+            });
+            $box.append($buttlist[$buttlist.length - 1]);
+            $buttlist[$buttlist.length - 1].onclick = function() {
                 downloadform(list);
             };
         }
         loadList(1, src);
-        chartinfo.text("加载时间较长，请耐心等待……");
+        $chartinfo.text("加载时间较长，请耐心等待……");
     }
 
     /**
@@ -142,18 +127,21 @@
      * @param {Array} list 数据
      */
     function createChart(list) {
-        function DataHandle(list) { //数据处理
+        function dataHandle(list) { //数据处理
             var data = [],
-                datares = [[],[]],  
-                timecount = new Date(list[0]['join_time'].slice(0,10)+" 00:05:00"),//起始时间
+                datares = [
+                    [],
+                    []
+                ],
+                timecount = new Date(list[0]['join_time'].slice(0, 10) + " 00:05:00"), //起始时间
                 timeend = new Date(),
                 timebase;
 
-            while(timecount < timeend){//填充时间轴
+            while (timecount < timeend) { //填充时间轴
                 data[timecount.toLocaleDateString()] = 0;
-                timecount.setTime(timecount.getTime()+86400000);//续一天
+                timecount.setTime(timecount.getTime() + 86400000); //续一天
             }
-            for (var i in list) {//填数据
+            for (var i in list) { //填数据
                 timebase = new Date(list[i]['join_time']);
                 data[timebase.toLocaleDateString()]++;
             }
@@ -163,8 +151,8 @@
             }
             return datares;
         }
-        var myChart = echarts.init(chartlist[0]),
-            datares = DataHandle(list);
+        var myChart = echarts.init($chartlist[0]),
+            datares = dataHandle(list);
         myChart.showLoading(); // 加载动画
         var option = { // 指定图表的配置项和数据
             title: {
@@ -219,9 +207,12 @@
      * @param {Array} list 数据
      */
     function createChart2(list) {
-        function DataHandle(list) { // 数据处理
+        function dataHandle(list) { // 数据处理
             var data = [],
-                datares =[[],[]],
+                datares = [
+                    [],
+                    []
+                ],
                 memberid;
             data["2012年前"] = 0;
             data["2012"] = 0;
@@ -245,6 +236,7 @@
                     data["2012年前"]++;
                 }
             }
+
             function newjson(name, value, target) {
                 var json = {};
                 json.name = name;
@@ -257,11 +249,9 @@
             }
             return datares;
         }
-
-        var datares = DataHandle(list),
-            myChart = echarts.init(chartlist[1]);
-
-        myChart.showLoading();// 加载动画
+        var datares = dataHandle(list),
+            myChart = echarts.init($chartlist[1]);
+        myChart.showLoading(); // 加载动画
         option = { // 指定图表的配置项和数据
             title: {
                 text: '成员注册时间分布图',
@@ -355,7 +345,7 @@
         /*
         Draw start
          */
-        var myChart = echarts.init(chartlist[2]),
+        var myChart = echarts.init($chartlist[2]),
             timeInfo = [];
         myChart.showLoading(); // 加载动画
         data['cPostData'] = [];
@@ -413,6 +403,121 @@
                 type: 'line',
                 yAxisIndex: [1],
                 data: data['cReplyData']
+            }]
+        };
+        myChart.hideLoading();
+        myChart.setOption(option);
+    }
+
+    /**
+     * 创建最多发言者
+     * @param {Array} list 数据
+     */
+    function createChart4(list) {
+        /**
+         * 快速排序
+         * @param  {Array}  array 待排序数组
+         * @param  {String} index 排序采用的字段
+         * @return {Array}        排序结果
+         */
+        function quickSort(array, index) {
+            var i = 0;
+            var j = array.length - 1;
+            var sort = function(i, j) {
+                if (i === j) {
+                    return;
+                }
+                var key = array[i];
+                var tempi = i;
+                var tempj = j;
+                while (j > i) {
+                    if (array[j][index] >= key[index]) {
+                        j--;
+                    } else {
+                        array[i] = array[j];
+                        while (j > ++i) {
+                            if (array[i][index] > key[index]) {
+                                array[j] = array[i];
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (tempi === i) {
+                    sort(++i, tempj);
+                    return;
+                }
+                array[i] = key;
+                sort(tempi, i);
+                sort(j, tempj);
+            };
+            sort(i, j);
+            return array;
+        }
+        var myChart = echarts.init($chartlist[3]),
+            data = [],
+            post; // ,reply;
+        myChart.showLoading(); // 加载动画
+        /*
+        Parse start
+         */
+        post = quickSort(list, 'post_count').reverse().slice(0, 10);
+        reply = quickSort(list, 'reply_count').reverse().slice(0, 10);
+        // console.debug(post);
+        /*
+        Draw start
+         */
+        function newjson(name, value, target) {
+            var json = {};
+            json.name = name;
+            json.value = value;
+            target.push(json);
+        }
+        data['name'] = [];
+        data['posts'] = [];
+        data['replys'] = [];
+        for (var i in post) {
+            data['name'][i] = post[i]['username'];
+            newjson(post[i]['username'], post[i]['post_count'], data['posts']);
+        }
+        for (var i in reply.reverse()) {
+            data['name'].push(reply[i]['username']);
+            newjson(reply[i]['username'], reply[i]['reply_count'], data['replys']);
+        }
+        option = { // 指定图表的配置项和数据
+            title: {
+                text: '发言成员分布图',
+                subtext: tableInfo,
+                x: 'center'
+            },
+            backgroundColor: '#fff',
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            legend: {
+                x: 'center',
+                y: 'bottom',
+                data: data['name']
+            },
+            series: [{
+                name: '发帖数',
+                type: 'pie',
+                selectedMode: 'single',
+                radius: '50%',
+                center: ['30%', '50%'],
+                data: data['posts']
+            }, {
+                name: '回复数',
+                type: 'pie',
+                radius: '50%',
+                center: ['70%', '50%'],
+                data: data['replys']
             }]
         };
         myChart.hideLoading();
