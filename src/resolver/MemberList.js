@@ -4,6 +4,8 @@
  */
 /*jshint unused: false */
 /*jshint evil: true */
+/*jshint eqeqeq: false */
+/*jshint -W041 */
 (function() {
     /*
      * 添加各类引用
@@ -28,7 +30,8 @@
     var $chartinfo = $('<div class = "chartinfo">正在载入，请稍后……</div>').appendTo($box), // 信息显示区
         $buttlist = $('<input type = "button" class = "chartbutton"/>'.x(aValue.length)).each(function(i) {
             $(this).val(aValue[i]);
-        }); // 按钮列表
+        }), // 按钮列表
+        tips = []; // 提示列表
     memberListCollect();
     var list = [],
         totalPage;
@@ -108,6 +111,7 @@
                         $box.scrollTo();
                         $($chartlist[index]).css("display", "block");
                         if ($($chartlist[index]).children().length) {
+                            $chartinfo.text(tips[index]);
                             return;
                         }
                         eval('createChart' + (index + 1))(list);
@@ -152,6 +156,7 @@
             }
             return datares;
         }
+        $chartinfo.text(tips[0] = '管理的好的话，会吸引很多小伙伴呢~');
         var myChart = echarts.init($chartlist[0]),
             datares = dataHandle(list);
         myChart.showLoading(); // 加载动画
@@ -215,7 +220,7 @@
                     []
                 ],
                 memberid;
-            data["2012年前"] = 0;
+            data["早于2012"] = 0;
             data["2012"] = 0;
             data["2013"] = 0;
             data["2014"] = 0;
@@ -234,9 +239,15 @@
                 } else if (memberid >= 259333) {
                     data["2012"]++;
                 } else {
-                    data["2012年前"]++;
+                    data["早于2012"]++;
                 }
             }
+            var most = '早于2012';
+            for (var p in data) {
+                if (data[p] > data[most])
+                    most = p;
+            }
+            $chartinfo.text(tips[1] = ('看来最多的是注册于 ' + most + ' 年的小伙伴呢……'));
 
             function newjson(name, value, target) {
                 var json = {};
@@ -351,13 +362,18 @@
         myChart.showLoading(); // 加载动画
         data['cPostData'] = [];
         data['cReplyData'] = [];
+        data['averagePost'] = 0;
+        data['averageReply'] = 0;
         for (var time in data) {
             if (isNaN(time))
                 continue;
             timeInfo.push(toDateStr(time));
             data['cPostData'].push(data[time]['post']);
             data['cReplyData'].push(data[time]['reply']);
+            data['averagePost'] += data[time]['post'] / 7;
+            data['averageReply'] += data[time]['reply'] / 7;
         }
+        $chartinfo.text(tips[2] = '7天的入圈者发帖平均数据：发帖 ' + data['averagePost'].toFixed(2) + ' 个，回复：' + data['averageReply'].toFixed(2) + ' 个。');
         option = { // 指定图表的配置项和数据
             title: {
                 text: '新人发帖指数',
@@ -421,7 +437,14 @@
          * @param  {String} index 排序采用的字段
          * @return {Array}        排序结果
          */
-        function quickSort(array, index) {
+        function quickSort(oArray, index) {
+            // 去除数据只有0的项目
+            var array = []; // 防止更改源数组
+            for (var i = 0; i < oArray.length; i++) {
+                if (oArray[i][index] !== 0) {
+                    array.push(oArray[i]);
+                }
+            }
             var i = 0;
             var j = array.length - 1;
             var sort = function(i, j) {
@@ -462,16 +485,25 @@
         /*
         Parse start
          */
-        post = quickSort(list, 'post_count').reverse().slice(0, 10);
-        reply = quickSort(list, 'reply_count').reverse().slice(0, 10);
+        post = quickSort(list, 'post_count').reverse();
+        reply = quickSort(list, 'reply_count').reverse();
+        $chartinfo.text(tips[3] = '圈里有 ' + post.length + ' 人发帖过，有 ' + reply.length + ' 人回复过。');
+        if (post.length > 10) {
+            post = post.slice(0, 10);
+        }
+        if (reply.length > 10) {
+            reply = reply.slice(0, 10);
+        }
         // console.debug(post);
         /*
         Draw start
          */
-        function newjson(name, value, target) {
+        function newjson(name, value, selected, target) {
             var json = {};
             json.name = name;
             json.value = value;
+            if (selected)
+                json.selected = true;
             target.push(json);
         }
         data['name'] = [];
@@ -479,11 +511,11 @@
         data['replys'] = [];
         for (var i in post) {
             data['name'][i] = post[i]['username'];
-            newjson(post[i]['username'], post[i]['post_count'], data['posts']);
+            newjson(post[i]['username'], post[i]['post_count'], i == 0, data['posts']);
         }
         for (var i in reply.reverse()) {
             data['name'].push(reply[i]['username']);
-            newjson(reply[i]['username'], reply[i]['reply_count'], data['replys']);
+            newjson(reply[i]['username'], reply[i]['reply_count'], i == reply.length - 1, data['replys']);
         }
         option = { // 指定图表的配置项和数据
             title: {
@@ -516,6 +548,7 @@
             }, {
                 name: '回复数',
                 type: 'pie',
+                selectedMode: 'single',
                 radius: '50%',
                 center: ['70%', '50%'],
                 data: data['replys']
